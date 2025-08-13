@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { supabase, type SurveyResponse } from "@/lib/supabase/client"
-import { CheckCircle, Loader2 } from "lucide-react"
+import { CheckCircle, Loader2, AlertCircle } from "lucide-react"
 
 const questions = [
   "규칙적인 운동을 하고 있습니다",
@@ -56,6 +56,11 @@ export default function SurveyForm() {
       return
     }
 
+    if (!supabase) {
+      alert("데이터베이스 연결에 문제가 있습니다. 관리자에게 문의해 주세요.")
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -79,6 +84,22 @@ export default function SurveyForm() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (!supabase) {
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardContent className="text-center py-16">
+          <AlertCircle className="w-24 h-24 text-yellow-500 mx-auto mb-8" />
+          <h2 className="text-4xl font-bold text-gray-800 mb-6">설정 필요</h2>
+          <p className="text-2xl text-gray-600 leading-relaxed">
+            데이터베이스 연결을 위한 환경 변수 설정이 필요합니다.
+            <br />
+            Netlify에서 NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 설정해 주세요.
+          </p>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (isSubmitted) {
